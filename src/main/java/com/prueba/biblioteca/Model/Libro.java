@@ -1,10 +1,17 @@
 package com.prueba.biblioteca.Model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Libro {
 
     @Id
@@ -19,9 +26,6 @@ public class Libro {
 
     @ManyToMany(mappedBy = "libros")
     private List<Prestamos> prestamos;
-
-    public Libro() {
-    }
 
     public long getId() {
         return id;
