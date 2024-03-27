@@ -5,6 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 @Entity
 public class Persona {
 
@@ -12,15 +15,19 @@ public class Persona {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
+    @NotBlank
+    @NotNull
     private String nombre;
 
-    @Column
+    @NotBlank
+    @NotNull
     private String apellido;
 
-    @Column
+    @NotBlank
+    @NotNull
     private String direccion;
-    @Column
+    @NotBlank
+    @NotNull
     private String identificacion;
 
     public String getIdentificacion() {

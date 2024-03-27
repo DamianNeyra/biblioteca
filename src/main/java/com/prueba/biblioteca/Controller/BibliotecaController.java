@@ -1,14 +1,22 @@
 package com.prueba.biblioteca.Controller;
 
-import com.prueba.biblioteca.Model.LibroDTO;
-import com.prueba.biblioteca.Model.Persona;
-import com.prueba.biblioteca.Model.PrestamoDTO;
+import com.prueba.biblioteca.Exception.ApiException;
+import com.prueba.biblioteca.Exception.BadRequestException;
+import com.prueba.biblioteca.Exception.DataNotFoundException;
+import com.prueba.biblioteca.Model.*;
 import com.prueba.biblioteca.Service.BibliotecaServices;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @RestController
+@CrossOrigin("*")
 public class BibliotecaController {
 
     private final BibliotecaServices bibliotecaServices;
@@ -27,7 +35,7 @@ public class BibliotecaController {
         try {
             return ResponseEntity.ok(bibliotecaServices.listaLibro());
         } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new DataNotFoundException(getClass(), Libro.class);
         }
 
     }
@@ -36,7 +44,7 @@ public class BibliotecaController {
         try {
             return ResponseEntity.ok(bibliotecaServices.listaPersonas());
         } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new DataNotFoundException(getClass(), Persona.class);
         }
 
     }
@@ -44,61 +52,86 @@ public class BibliotecaController {
     public ResponseEntity<?> listarPrestamos(){
         try {
             return ResponseEntity.ok(bibliotecaServices.listaPrestamos());
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (Exception ex) {
+            throw new DataNotFoundException(getClass(), Prestamos.class);
         }
 
     }
 
     @PostMapping("/crear-libro")
-    public String crearLibro(@RequestBody LibroDTO libroDTO){
-        return bibliotecaServices.crearLibro(libroDTO);
+    public ResponseEntity<?> crearLibro(@Valid @RequestBody LibroRq libroRq) throws ApiException {
+        try{
+            return ResponseEntity.ok(bibliotecaServices.crearLibro(libroRq));
+        } catch (ApiException bex){
+        throw new BadRequestException(bex.getErrorDto());
+        }
     }
 
     @PostMapping("/crear-persona")
-    public String crearPersona(@RequestBody Persona persona){
-        return bibliotecaServices.crearPersona(persona);
+    public ResponseEntity<?> crearPersona(@Valid @RequestBody Persona persona) throws ApiException {
+        try{
+            return ResponseEntity.ok(bibliotecaServices.crearPersona(persona));
+        } catch (ApiException bex){
+            throw new BadRequestException(bex.getErrorDto());
+        }
     }
     @PostMapping("/crear-prestamo")
-    public String crearPrestamo(@RequestBody PrestamoDTO prestamoDTO){
-        return bibliotecaServices.crearPrestamo(prestamoDTO);
+    public ResponseEntity<?> crearPrestamo(@Valid @RequestBody PrestamoRq prestamoRq) throws BadRequestException {
+        try{
+            return ResponseEntity.ok(bibliotecaServices.crearPrestamo(prestamoRq));
+        }catch (Exception bex){
+            throw new BadRequestException(bex.getMessage());
+        }
     }
 
     @PutMapping("/editar-libro/{id}")
     public String editarLibro(
             @PathVariable("id") long id,
-            @RequestBody LibroDTO libroDTO){
-        return bibliotecaServices.editarLibro(id,libroDTO);
+            @Valid @RequestBody LibroRq libroRq){
+        return bibliotecaServices.editarLibro(id, libroRq);
     }
 
     @PutMapping("/editar-persona/{id}")
     public String editarPersona(
             @PathVariable("id") long id,
-            @RequestBody Persona persona){
+            @Valid @RequestBody Persona persona){
         return bibliotecaServices.editarPersona(id,persona);
     }
     @PutMapping("/editar-prestamo/{id}")
     public String editarPrestamo(
             @PathVariable("id") long id,
-            @RequestBody PrestamoDTO prestamoDTO){
-        return bibliotecaServices.editarPrestamo(id,prestamoDTO);
+            @Valid @RequestBody PrestamoRq prestamoRq){
+        return bibliotecaServices.editarPrestamo(id, prestamoRq);
     }
 
     @DeleteMapping("/eliminar-libro/{id}")
     public String eliminarLibro(
             @PathVariable("id") long id){
-        return bibliotecaServices.eliminarLibro(id);
+        try{
+            return bibliotecaServices.eliminarLibro(id);
+        } catch (Exception ex) {
+            throw new DataNotFoundException(getClass(), Libro.class);
+        }
     }
 
     @DeleteMapping("/eliminar-persona/{id}")
     public String eliminarPersona(
             @PathVariable("id") long id){
-        return bibliotecaServices.eliminarPersona(id);
+        try{
+            return bibliotecaServices.eliminarPersona(id);
+        } catch (Exception ex) {
+            throw new DataNotFoundException(getClass(), Persona.class);
+        }
     }
     @DeleteMapping("/eliminar-prestamo/{id}")
     public String eliminarPrestamo(
             @PathVariable("id") long id){
-        return bibliotecaServices.eliminarPrestamo(id);
+
+        try {
+            return bibliotecaServices.eliminarPrestamo(id);
+        } catch (Exception ex) {
+            throw new DataNotFoundException(getClass(), Prestamos.class);
+        }
     }
 
 

@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -18,12 +19,16 @@ public class Libro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank
     private String titulo;
 
+    @NotNull
     private int cantidad;
 
+    @NotBlank
     private String autor;
 
+    @Transient
     @ManyToMany(mappedBy = "libros")
     private List<Prestamos> prestamos;
 
