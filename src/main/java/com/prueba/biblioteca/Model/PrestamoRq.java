@@ -1,18 +1,17 @@
 package com.prueba.biblioteca.Model;
 
-import org.antlr.v4.runtime.misc.NotNull;
 
-import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.List;
 
-public class PrestamoDTO {
+public class PrestamoRq {
     @NotBlank(message = "Id persona es Obligatorio")
     private long idPersona;
     @NotBlank(message = "Minimo un libro")
     private List<Long> idLibros;
 
-    public PrestamoDTO() {
+    public PrestamoRq() {
     }
 
 

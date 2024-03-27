@@ -1,20 +1,20 @@
 package com.prueba.biblioteca.Model;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import org.antlr.v4.runtime.misc.NotNull;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 
-public class LibroDTO {
+public class LibroRq {
     @NotBlank(message = "El titulo es Obligatorio")
     private String titulo;
-    @NotBlank(message = "La cantidad es Obligatoria")
-    @Min(1)
+    @NotNull
+    @Min(value = 1,message = "Se registra minimo un libro")
     private int cantidad;
     @NotBlank(message = "El autor es Obligatorio")
     private String autor;
 
-    public LibroDTO() {
+    public LibroRq() {
     }
 
     public String getTitulo() {

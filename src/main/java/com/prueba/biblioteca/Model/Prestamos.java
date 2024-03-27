@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -21,8 +23,12 @@ public class Prestamos {
     private long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @NotBlank
+    @NotNull
     private Persona persona;
 
+    @NotBlank
+    @NotNull
     private LocalDateTime fechaPrestamo;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)

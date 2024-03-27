@@ -1,5 +1,7 @@
 package com.prueba.biblioteca.Service.Impl;
 
+import com.prueba.biblioteca.Exception.ApiException;
+import com.prueba.biblioteca.Exception.BadRequestException;
 import com.prueba.biblioteca.Model.*;
 import com.prueba.biblioteca.Repository.LibroRepository;
 import com.prueba.biblioteca.Repository.PersonaRepository;
@@ -8,7 +10,6 @@ import com.prueba.biblioteca.Service.BibliotecaServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
 
     private final PrestamosRepository prestamosRepository;
 
+
     public BibliotecaServicesImpl(LibroRepository libroRepository, PersonaRepository personaRepository, PrestamosRepository prestamosRepository) {
         this.libroRepository = libroRepository;
         this.personaRepository = personaRepository;
@@ -29,8 +31,8 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public List<Libro> listaLibro() {
-        return libroRepository.findAll();
+    public List<LibroRs> listaLibro() {
+        return libroRepository.listarLibros();
     }
 
     @Override
@@ -44,41 +46,49 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public String crearLibro(LibroDTO libroDTO) {
-        Libro libroCreate = Libro.builder().autor(libroDTO.getAutor()).titulo(libroDTO.getTitulo())
-                .cantidad(libroDTO.getCantidad()).build();
+    public String crearLibro(LibroRq libroRq) {
+        Libro libroCreate = Libro.builder().autor(libroRq.getAutor()).titulo(libroRq.getTitulo())
+                .cantidad(libroRq.getCantidad()).build();
         libroRepository.save(libroCreate);
-        return "Se creó el libro";
+        String msg = "Se crea el libro "+ libroCreate.getTitulo();
+        log.info(msg);
+        return msg;
     }
 
     @Override
-    public String crearPersona(Persona persona) {
+    public String crearPersona(Persona persona) throws ApiException {
         personaRepository.save(persona);
-        return "Se crea la Persona";
+        String msg = "Se crea la persona "+ persona.getNombre();
+        log.info(msg);
+        return msg;
     }
 
     @Override
-    public String crearPrestamo(PrestamoDTO prestamoDTO) {
-        Persona personaPrestamoCreate = personaRepository.findById(prestamoDTO.getIdPersona()).get();
+    public String crearPrestamo(PrestamoRq prestamoRq) throws ApiException {
+        Persona personaPrestamoCreate = personaRepository.findById(prestamoRq.getIdPersona()).get();
         List<Libro> listaLibros = new ArrayList<>();
-        prestamoDTO.getIdLibros().forEach(data -> {
+        prestamoRq.getIdLibros().forEach(data -> {
             Libro libroList = libroRepository.findById(data).get();
             listaLibros.add(libroList);
         });
         Prestamos prestamosCreate = Prestamos.builder().persona(personaPrestamoCreate)
                 .fechaPrestamo(LocalDateTime.now()).libros(listaLibros).build();
         prestamosRepository.save(prestamosCreate);
-        return "Se crea el prestamo a "+ prestamosCreate.getPersona().getNombre();
+        String msg = "Se crea prestamo para "+ prestamosCreate.getPersona().getNombre();
+        log.info(msg);
+        return msg;
     }
 
     @Override
-    public String editarLibro(long id, LibroDTO libro) {
+    public String editarLibro(long id, LibroRq libro) {
         Libro libroEdit = libroRepository.findById(id).get();
         libroEdit.setTitulo(libro.getTitulo());
         libroEdit.setAutor(libro.getAutor());
         libroEdit.setCantidad(libro.getCantidad());
         libroRepository.save(libroEdit);
-        return "Libro " + libroEdit.getTitulo() + " editado";
+        String msg = "Libro " + libroEdit.getTitulo() + " editado";
+        log.info(msg);
+        return msg;
     }
 
     @Override
@@ -89,14 +99,16 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
         personaEdit.setIdentificacion(persona.getIdentificacion());
         personaEdit.setDireccion(persona.getDireccion());
         personaRepository.save(personaEdit);
-        return "Persona: " + personaEdit.getNombre() + " editada";
+        String msg = "Persona: " + personaEdit.getNombre() + " editada";
+        log.info(msg);
+        return msg;
     }
 
     @Override
-    public String editarPrestamo(long id, PrestamoDTO prestamoDTO) {
-        Persona personaPrestamo = personaRepository.findById(prestamoDTO.getIdPersona()).get();
+    public String editarPrestamo(long id, PrestamoRq prestamoRq) {
+        Persona personaPrestamo = personaRepository.findById(prestamoRq.getIdPersona()).get();
         List<Libro> listaLibros = null;
-        prestamoDTO.getIdLibros().forEach(data -> {
+        prestamoRq.getIdLibros().forEach(data -> {
             Libro libroList = libroRepository.findById(data).get();
             listaLibros.add(libroList);
         });
@@ -105,25 +117,38 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
         prestamoEdit.setFechaPrestamo(LocalDateTime.now());
         prestamoEdit.setLibros(listaLibros);
         prestamosRepository.save(prestamoEdit);
-        return "Pestamo de  " + personaPrestamo.getNombre() + " se editó";
+
+        String msg = "Pestamo de  " + personaPrestamo.getNombre() + " se editó";
+        log.info(msg);
+        return msg;
     }
 
     @Override
     public String eliminarLibro(long id) {
-        libroRepository.delete(libroRepository.findById(id).get());
-        return "Se eliminó el libro";
+        Libro libroEli = libroRepository.findById(id).get();
+        String msg = "Se eliminó el libro "+ libroEli.getTitulo();
+        log.info(msg);
+        libroRepository.delete(libroEli);
+
+        return msg;
     }
 
     @Override
     public String eliminarPersona(long id) {
-        personaRepository.delete(personaRepository.findById(id).get());
-        return "Se elimino la persona";
+        Persona personaEli = personaRepository.findById(id).get();
+        String msg = "Se eliminó el persona "+ personaEli.getNombre();
+        log.info(msg);
+        personaRepository.delete(personaEli);
+        return msg;
     }
 
     @Override
     public String eliminarPrestamo(long id) {
-        prestamosRepository.delete(prestamosRepository.findById(id).get());
-        return "Se elimino el Prestamo";
+        Prestamos prestamoEli = prestamosRepository.findById(id).get();
+        String msg = "Se eliminó el prestamo de la persona "+ prestamoEli.getPersona().getNombre();
+        log.info(msg);
+        prestamosRepository.delete(prestamoEli);
+        return msg;
     }
 
 
