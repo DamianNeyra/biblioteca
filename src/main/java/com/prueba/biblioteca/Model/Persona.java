@@ -16,18 +16,14 @@ public class Persona {
     private long id;
 
     @NotBlank
-    @NotNull
     private String nombre;
 
     @NotBlank
-    @NotNull
     private String apellido;
 
     @NotBlank
-    @NotNull
     private String direccion;
     @NotBlank
-    @NotNull
     private String identificacion;
 
     public String getIdentificacion() {

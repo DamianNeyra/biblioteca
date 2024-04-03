@@ -24,13 +24,12 @@ public class Prestamos {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @NotBlank
-    @NotNull
     private Persona persona;
 
     @NotBlank
-    @NotNull
     private LocalDateTime fechaPrestamo;
 
+    @NotBlank
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "prestamo_libros", joinColumns = @JoinColumn(name = "id_prestamo", referencedColumnName = "id"),
                 inverseJoinColumns = @JoinColumn(name = "id_libro", referencedColumnName = "id"))
