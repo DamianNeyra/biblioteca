@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RestController
-@CrossOrigin("*")
 public class BibliotecaController {
 
     private final BibliotecaServices bibliotecaServices;
@@ -76,7 +75,7 @@ public class BibliotecaController {
         }
     }
     @PostMapping("/crear-prestamo")
-    public ResponseEntity<?> crearPrestamo(@Valid @RequestBody PrestamoRq prestamoRq) throws BadRequestException {
+    public ResponseEntity<?> crearPrestamo(@Valid @RequestBody PrestamoRq prestamoRq) throws ApiException {
         try{
             return ResponseEntity.ok(bibliotecaServices.crearPrestamo(prestamoRq));
         }catch (Exception bex){
@@ -85,23 +84,36 @@ public class BibliotecaController {
     }
 
     @PutMapping("/editar-libro/{id}")
-    public String editarLibro(
+    public ResponseEntity<?> editarLibro(
             @PathVariable("id") long id,
-            @Valid @RequestBody LibroRq libroRq){
-        return bibliotecaServices.editarLibro(id, libroRq);
+            @Valid @RequestBody LibroRq libroRq) throws ApiException{
+
+        try{
+            return ResponseEntity.ok(bibliotecaServices.editarLibro(id, libroRq));
+        }catch (Exception bex){
+            throw new BadRequestException(bex.getMessage());
+        }
     }
 
     @PutMapping("/editar-persona/{id}")
-    public String editarPersona(
+    public ResponseEntity<?> editarPersona(
             @PathVariable("id") long id,
-            @Valid @RequestBody Persona persona){
-        return bibliotecaServices.editarPersona(id,persona);
+            @Valid @RequestBody Persona persona) throws ApiException{
+        try{
+            return ResponseEntity.ok(bibliotecaServices.editarPersona(id,persona));
+        }catch (Exception bex){
+            throw new BadRequestException(bex.getMessage());
+        }
     }
     @PutMapping("/editar-prestamo/{id}")
-    public String editarPrestamo(
+    public ResponseEntity<?> editarPrestamo(
             @PathVariable("id") long id,
-            @Valid @RequestBody PrestamoRq prestamoRq){
-        return bibliotecaServices.editarPrestamo(id, prestamoRq);
+            @Valid @RequestBody PrestamoRq prestamoRq) throws ApiException{
+        try{
+            return ResponseEntity.ok(bibliotecaServices.editarPrestamo(id, prestamoRq));
+        }catch (Exception bex){
+            throw new BadRequestException(bex.getMessage());
+        }
     }
 
     @DeleteMapping("/eliminar-libro/{id}")
