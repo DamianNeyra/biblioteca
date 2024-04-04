@@ -52,7 +52,7 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     public Optional<Libro> listaLibroId(long id) throws ApiException {
         Optional<Libro> libro = libroRepository.findById(id);
         if(libro.isEmpty()){
-            throw new DataNotFoundException(ErrorDTO.builder().code("P-400").nombre("NOT FOUND")
+            throw new DataNotFoundException(ErrorDTO.builder().code("P-404").nombre("NOT FOUND")
                     .message("No existe el libro").build());
         } else {
             return libro;
