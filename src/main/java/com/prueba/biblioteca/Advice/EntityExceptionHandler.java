@@ -49,14 +49,20 @@ public class EntityExceptionHandler {
         ErrorDTO error = ErrorDTO.builder().code("P-400").message(e.getMessage()).build();
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = { DataNotFoundException.class })
-    protected ResponseEntity<ErrorDTO> handleNotAcceptable(RuntimeException ex) {
-        DataNotFoundException dex = (DataNotFoundException) ex;
-        String msj = "Error en la clase: " + dex.getExceptionClass().getName() + " al tratar de buscar: "
-                + dex.getNotFoundClass() ;
-        log.error(msj, ex);
-        ErrorDTO error = ErrorDTO.builder().code("P-404").nombre(msj).message("NO EXISTE O ESTA EN USO").build();
-        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    protected ResponseEntity<ErrorDTO> handleNotAcceptable(DataNotFoundException ex) {
+        log.info(ex.getMessage());
+        return new ResponseEntity<>(ex.getErrorDto(), HttpStatus.NOT_FOUND);
+    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = { Exception.class })
+    protected ResponseEntity<ErrorDTO> internalError(Exception ex) {
+
+        log.error(ex.getMessage());
+        ErrorDTO error = ErrorDTO.builder().code("P-500").nombre("Internal Server Error")
+                .message("Error en el servidor, comuniquese con el propietario").build();
+        return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

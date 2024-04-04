@@ -1,5 +1,6 @@
 package com.prueba.biblioteca.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,8 +29,8 @@ public class Libro {
     @NotBlank
     private String autor;
 
-    @Transient
     @ManyToMany(mappedBy = "libros")
+    @JsonIgnore
     private List<Prestamos> prestamos;
 
     public long getId() {
