@@ -1,27 +1,15 @@
 package com.prueba.biblioteca.Exception;
 
-public class DataNotFoundException extends RuntimeException {
+public class DataNotFoundException extends ApiException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    private final Class<?> exceptionClass;
-    private final Class<?> notFoundClass;
-
-    public DataNotFoundException(Class<?> exceptionClass, Class<?> notFoundClass) {
+    public DataNotFoundException() {
         super();
-        this.exceptionClass = exceptionClass;
-        this.notFoundClass = notFoundClass;
     }
 
-    public Class<?> getExceptionClass() {
-        return exceptionClass;
-    }
-
-    public Class<?> getNotFoundClass() {
-        return notFoundClass;
+    public DataNotFoundException(ErrorDTO errorDto) {
+        super(errorDto);
     }
 
 }

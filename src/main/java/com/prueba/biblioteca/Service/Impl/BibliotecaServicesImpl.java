@@ -1,7 +1,8 @@
 package com.prueba.biblioteca.Service.Impl;
 
 import com.prueba.biblioteca.Exception.ApiException;
-import com.prueba.biblioteca.Exception.BadRequestException;
+import com.prueba.biblioteca.Exception.DataNotFoundException;
+import com.prueba.biblioteca.Exception.ErrorDTO;
 import com.prueba.biblioteca.Model.*;
 import com.prueba.biblioteca.Repository.LibroRepository;
 import com.prueba.biblioteca.Repository.PersonaRepository;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class BibliotecaServicesImpl implements BibliotecaServices {
@@ -36,13 +39,24 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public List<Persona> listaPersonas() {
-        return personaRepository.findAll();
+    public List<PersonaDTO> listaPersonas() {
+        return personaRepository.listarPersonas();
     }
 
     @Override
     public List<Prestamos> listaPrestamos() {
         return prestamosRepository.findAll();
+    }
+
+    @Override
+    public Optional<Libro> listaLibroId(long id) throws ApiException {
+        Optional<Libro> libro = libroRepository.findById(id);
+        if(libro.isEmpty()){
+            throw new DataNotFoundException(ErrorDTO.builder().code("P-400").nombre("NOT FOUND")
+                    .message("No existe el libro").build());
+        } else {
+            return libro;
+        }
     }
 
     @Override
@@ -56,8 +70,10 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public String crearPersona(Persona persona) throws ApiException {
-        personaRepository.save(persona);
+    public String crearPersona(PersonaDTO persona) throws ApiException {
+        Persona pers = Persona.builder().nombre(persona.getNombre()).apellido(persona.getApellido())
+                .direccion(persona.getDireccion()).identificacion(persona.getIdentificacion()).build();
+        personaRepository.save(pers);
         String msg = "Se crea la persona "+ persona.getNombre();
         log.info(msg);
         return msg;
@@ -80,7 +96,7 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public String editarLibro(long id, LibroRq libro) {
+    public String editarLibro(long id, LibroRq libro) throws ApiException{
         Libro libroEdit = libroRepository.findById(id).get();
         libroEdit.setTitulo(libro.getTitulo());
         libroEdit.setAutor(libro.getAutor());
@@ -92,7 +108,7 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public String editarPersona(long id ,Persona persona) {
+    public String editarPersona(long id , PersonaDTO persona) throws ApiException{
         Persona personaEdit = personaRepository.findById(id).get();
         personaEdit.setNombre(persona.getNombre());
         personaEdit.setApellido(persona.getApellido());
@@ -105,7 +121,7 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public String editarPrestamo(long id, PrestamoRq prestamoRq) {
+    public String editarPrestamo(long id, PrestamoRq prestamoRq) throws ApiException{
         Persona personaPrestamo = personaRepository.findById(prestamoRq.getIdPersona()).get();
         List<Libro> listaLibros = null;
         prestamoRq.getIdLibros().forEach(data -> {
@@ -124,7 +140,7 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public String eliminarLibro(long id) {
+    public String eliminarLibro(long id) throws ApiException{
         Libro libroEli = libroRepository.findById(id).get();
         String msg = "Se eliminó el libro "+ libroEli.getTitulo();
         log.info(msg);
@@ -134,7 +150,7 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public String eliminarPersona(long id) {
+    public String eliminarPersona(long id) throws ApiException {
         Persona personaEli = personaRepository.findById(id).get();
         String msg = "Se eliminó el persona "+ personaEli.getNombre();
         log.info(msg);
@@ -143,7 +159,7 @@ public class BibliotecaServicesImpl implements BibliotecaServices {
     }
 
     @Override
-    public String eliminarPrestamo(long id) {
+    public String eliminarPrestamo(long id) throws ApiException {
         Prestamos prestamoEli = prestamosRepository.findById(id).get();
         String msg = "Se eliminó el prestamo de la persona "+ prestamoEli.getPersona().getNombre();
         log.info(msg);

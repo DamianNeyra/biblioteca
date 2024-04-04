@@ -3,146 +3,200 @@ package com.prueba.biblioteca.Controller;
 import com.prueba.biblioteca.Exception.ApiException;
 import com.prueba.biblioteca.Exception.BadRequestException;
 import com.prueba.biblioteca.Exception.DataNotFoundException;
+import com.prueba.biblioteca.Exception.InternalServerErrorException;
 import com.prueba.biblioteca.Model.*;
 import com.prueba.biblioteca.Service.BibliotecaServices;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @RestController
 public class BibliotecaController {
-
-    private final BibliotecaServices bibliotecaServices;
-
-    public BibliotecaController(BibliotecaServices bibliotecaServices) {
-        this.bibliotecaServices = bibliotecaServices;
-    }
+    @Autowired
+    private BibliotecaServices bibliotecaServices;
 
     @GetMapping("/")
     public String probando(){
         return "Bienvenidos a Biblioteca";
     }
 
-    @GetMapping("/listar-libros")
-    public ResponseEntity<?> listarLibros(){
+    @GetMapping("/libros")
+    public ResponseEntity<?> listarLibros() throws ApiException{
         try {
             return ResponseEntity.ok(bibliotecaServices.listaLibro());
-        } catch (Exception ex) {
-            throw new DataNotFoundException(getClass(), Libro.class);
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
 
     }
-    @GetMapping("/listar-personas")
-    public ResponseEntity<?> listarPersonas(){
+    @GetMapping("/personas")
+    public ResponseEntity<?> listarPersonas() throws ApiException {
         try {
             return ResponseEntity.ok(bibliotecaServices.listaPersonas());
-        } catch (Exception ex) {
-            throw new DataNotFoundException(getClass(), Persona.class);
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
 
     }
-    @GetMapping("/listar-prestamos")
-    public ResponseEntity<?> listarPrestamos(){
+    @GetMapping("/prestamos")
+    public ResponseEntity<?> listarPrestamos() throws ApiException{
         try {
             return ResponseEntity.ok(bibliotecaServices.listaPrestamos());
-        }catch (Exception ex) {
-            throw new DataNotFoundException(getClass(), Prestamos.class);
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
+        }
+    }
+
+    @GetMapping("/libros/{id}")
+    public ResponseEntity<?> listarLibrosId(@PathVariable("id") long id) throws ApiException{
+        try {
+            return ResponseEntity.ok(bibliotecaServices.listaLibroId(id));
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
 
     }
 
-    @PostMapping("/crear-libro")
+    @PostMapping("/libro")
     public ResponseEntity<?> crearLibro(@Valid @RequestBody LibroRq libroRq) throws ApiException {
         try{
             return ResponseEntity.ok(bibliotecaServices.crearLibro(libroRq));
-        } catch (ApiException bex){
-        throw new BadRequestException(bex.getErrorDto());
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
 
-    @PostMapping("/crear-persona")
-    public ResponseEntity<?> crearPersona(@Valid @RequestBody Persona persona) throws ApiException {
+    @PostMapping("/persona")
+    public ResponseEntity<?> crearPersona(@Valid @RequestBody PersonaDTO persona) throws ApiException {
         try{
             return ResponseEntity.ok(bibliotecaServices.crearPersona(persona));
-        } catch (ApiException bex){
-            throw new BadRequestException(bex.getErrorDto());
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
-    @PostMapping("/crear-prestamo")
+    @PostMapping("/prestamo")
     public ResponseEntity<?> crearPrestamo(@Valid @RequestBody PrestamoRq prestamoRq) throws ApiException {
         try{
             return ResponseEntity.ok(bibliotecaServices.crearPrestamo(prestamoRq));
-        }catch (Exception bex){
-            throw new BadRequestException(bex.getMessage());
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
 
-    @PutMapping("/editar-libro/{id}")
+    @PutMapping("/libro/{id}")
     public ResponseEntity<?> editarLibro(
             @PathVariable("id") long id,
             @Valid @RequestBody LibroRq libroRq) throws ApiException{
 
         try{
             return ResponseEntity.ok(bibliotecaServices.editarLibro(id, libroRq));
-        }catch (Exception bex){
-            throw new BadRequestException(bex.getMessage());
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
 
-    @PutMapping("/editar-persona/{id}")
+    @PutMapping("/persona/{id}")
     public ResponseEntity<?> editarPersona(
             @PathVariable("id") long id,
-            @Valid @RequestBody Persona persona) throws ApiException{
+            @Valid @RequestBody PersonaDTO persona) throws ApiException{
         try{
             return ResponseEntity.ok(bibliotecaServices.editarPersona(id,persona));
-        }catch (Exception bex){
-            throw new BadRequestException(bex.getMessage());
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
-    @PutMapping("/editar-prestamo/{id}")
+    @PutMapping("/prestamo/{id}")
     public ResponseEntity<?> editarPrestamo(
             @PathVariable("id") long id,
             @Valid @RequestBody PrestamoRq prestamoRq) throws ApiException{
         try{
             return ResponseEntity.ok(bibliotecaServices.editarPrestamo(id, prestamoRq));
-        }catch (Exception bex){
-            throw new BadRequestException(bex.getMessage());
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
 
-    @DeleteMapping("/eliminar-libro/{id}")
+    @DeleteMapping("/libro/{id}")
     public String eliminarLibro(
-            @PathVariable("id") long id){
+            @PathVariable("id") long id) throws ApiException{
         try{
             return bibliotecaServices.eliminarLibro(id);
-        } catch (Exception ex) {
-            throw new DataNotFoundException(getClass(), Libro.class);
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
 
-    @DeleteMapping("/eliminar-persona/{id}")
+    @DeleteMapping("/persona/{id}")
     public String eliminarPersona(
-            @PathVariable("id") long id){
+            @PathVariable("id") long id) throws ApiException{
         try{
             return bibliotecaServices.eliminarPersona(id);
-        } catch (Exception ex) {
-            throw new DataNotFoundException(getClass(), Persona.class);
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
-    @DeleteMapping("/eliminar-prestamo/{id}")
+    @DeleteMapping("/prestamo/{id}")
     public String eliminarPrestamo(
-            @PathVariable("id") long id){
+            @PathVariable("id") long id) throws ApiException{
 
         try {
             return bibliotecaServices.eliminarPrestamo(id);
-        } catch (Exception ex) {
-            throw new DataNotFoundException(getClass(), Prestamos.class);
+        } catch (BadRequestException e) {
+            throw new BadRequestException(e.getErrorDto());
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e.getErrorDto());
+        } catch (ApiException e) {
+            throw new InternalServerErrorException(e.getErrorDto());
         }
     }
 
