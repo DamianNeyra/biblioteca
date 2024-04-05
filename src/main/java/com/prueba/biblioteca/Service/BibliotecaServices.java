@@ -1,22 +1,28 @@
 package com.prueba.biblioteca.Service;
 
-import com.prueba.biblioteca.Model.Libro;
-import com.prueba.biblioteca.Model.Persona;
-import com.prueba.biblioteca.Model.Prestamos;
+import com.prueba.biblioteca.Exception.ApiException;
+import com.prueba.biblioteca.Model.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BibliotecaServices {
 
-    List<Libro> listaLibro();
-    List<Persona> listaPersonas();
-    List<Prestamos> listaPrestamos();
-    String crearLibro(Libro libro);
-    String crearPersona(Persona persona);
-    String crearPrestamo(Prestamos prestamos);
+    List<LibroRs> listaLibro() throws ApiException;
+    List<PersonaDTO> listaPersonas() throws ApiException;
+    List<Prestamos> listaPrestamos() throws ApiException;
 
-    String editarLibro(long id, Libro libro);
-    String editarPersona(long id, Persona persona);
-    String editarPrestamo(long id, Prestamos prestamos);
+    Optional<Libro> listaLibroId(long id) throws ApiException;
+    String crearLibro(LibroRq libroRq)throws ApiException;
+    String crearPersona(PersonaDTO persona) throws ApiException;
+    String crearPrestamo(PrestamoRq prestamoRq)throws ApiException;
+
+    String editarLibro(long id, LibroRq libroRq)throws ApiException;
+    String editarPersona(long id, PersonaDTO persona)throws ApiException;
+    String editarPrestamo(long id, PrestamoRq prestamoRq)throws ApiException;
+
+    String eliminarLibro(long id)throws ApiException;
+    String eliminarPersona(long id)throws ApiException;
+    String eliminarPrestamo(long id)throws ApiException;
 
 }

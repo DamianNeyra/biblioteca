@@ -5,22 +5,31 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Persona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
+    @NotBlank
     private String nombre;
 
-    @Column
+    @NotBlank
     private String apellido;
 
-    @Column
+    @NotBlank
     private String direccion;
-    @Column
+    @NotBlank
     private String identificacion;
 
     public String getIdentificacion() {
