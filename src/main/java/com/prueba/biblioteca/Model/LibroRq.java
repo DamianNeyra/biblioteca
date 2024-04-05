@@ -2,9 +2,10 @@ package com.prueba.biblioteca.Model;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import org.antlr.v4.runtime.misc.NotNull;
 
-
+@Builder
 public class LibroRq {
     @NotBlank(message = "El titulo es Obligatorio")
     private String titulo;
@@ -15,6 +16,12 @@ public class LibroRq {
     private String autor;
 
     public LibroRq() {
+    }
+
+    public LibroRq(String titulo, int cantidad, String autor) {
+        this.titulo = titulo;
+        this.cantidad = cantidad;
+        this.autor = autor;
     }
 
     public String getTitulo() {
